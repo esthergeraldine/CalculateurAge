@@ -1,12 +1,14 @@
 ﻿
-using CalculateurAge .Views;
-namespace CalculateurAge1
+using CalculateurAge1.Views;
 
-public AppShell()
+namespace CalculateurAge1;
+
+public partial class AppShell : Shell
 {
-    InitializeComponent();
-    // Declare la route : sans cette ligne, GoToAsync
-    // leve une exception "route inconnue".
-    Routing.RegisterRoute(nameof(ResultatPage),
-        typeof(ResultatPage));
+    public AppShell()
+    {
+        InitializeComponent();
+        // Déclare la route : sans cette ligne, GoToAsync lève une exception "route inconnue".
+        Routing.RegisterRoute(nameof(ResultatPage), typeof(ResultatPage));
+    }
 }

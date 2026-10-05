@@ -1,5 +1,4 @@
-﻿using CalculateurAge1.views;
-
+﻿using CalculateurAge1.Views;
 namespace CalculateurAge1;
 
 public partial class MainPage : ContentPage
@@ -21,7 +20,8 @@ public partial class MainPage : ContentPage
         int age = DateTime.Today.Year - d.Year;
         if (d.Date > DateTime.Today.AddYears(-age)) age--;
 
-        lblResultat.Text = $"{entryNom.Text}, vous avez {age} ans";
-        lblResultat.IsVisible = true;
+
+        await Shell.Current.GoToAsync(
+            $"{nameof(ResultatPage)}?nom={entryNom.Text}&age={age}");
     }
 }
