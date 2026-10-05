@@ -1,12 +1,11 @@
-﻿namespace CalculateurAge1.ViewModels;
+﻿using CalculateurAge1.Views;
+
+namespace CalculateurAge1.ViewModels;
 
 public class CalculateurViewModel : BaseViewModel
 {
     private string _nom = "";
     private DateTime _dateNaissance = DateTime.Today.AddYears(-20);
-    private string _resultat = "";
-    private string _message = "";
-    private bool _resultatVisible;
 
     public string Nom
     {
@@ -25,7 +24,6 @@ public class CalculateurViewModel : BaseViewModel
         {
             if (SetField(ref _dateNaissance, value))
             {
-                // Fonctionnalité 3 : on prévient la vue que l'erreur a peut-être changé
                 OnPropertyChanged(nameof(ErreurDate));
                 OnPropertyChanged(nameof(ErreurVisible));
                 CalculerCommand.Rafraichir();
@@ -33,26 +31,6 @@ public class CalculateurViewModel : BaseViewModel
         }
     }
 
-    public string Resultat
-    {
-        get => _resultat;
-        set => SetField(ref _resultat, value);
-    }
-
-    // Fonctionnalité 1 : "Majeur" ou "Mineur"
-    public string Message
-    {
-        get => _message;
-        set => SetField(ref _message, value);
-    }
-
-    public bool ResultatVisible
-    {
-        get => _resultatVisible;
-        set => SetField(ref _resultatVisible, value);
-    }
-
-    // Fonctionnalité 3 : date future refusée
     public bool DateFuture => DateNaissance.Date > DateTime.Today;
     public bool ErreurVisible => DateFuture;
     public string ErreurDate => DateFuture
@@ -65,29 +43,58 @@ public class CalculateurViewModel : BaseViewModel
     public CalculateurViewModel()
     {
         CalculerCommand = new RelayCommand(
-            Calculer,
+            async () => await Calculer(),
             () => !string.IsNullOrWhiteSpace(Nom) && !DateFuture);
 
-        // Fonctionnalité 2 : Effacer
         EffacerCommand = new RelayCommand(Effacer);
     }
 
-    private void Calculer()
+    private async Task Calculer()
     {
         int age = DateTime.Today.Year - DateNaissance.Year;
         if (DateNaissance.Date > DateTime.Today.AddYears(-age)) age--;
 
-        Resultat = $"{Nom}, vous avez {age} ans";
-        Message = age >= 18 ? "Majeur" : "Mineur";
-        ResultatVisible = true;
+        int jours = JoursAvantAnniversaire();
+
+        var info = new ResultatInfo
+        {
+            Resultat = $"{Nom}, vous avez {age} ans",
+            Message = age >= 18 ? "Majeur" : "Mineur",
+            Anniversaire = jours == 0
+                ? "Aujourd'hui, c'est votre anniversaire !"
+                : $"Prochain anniversaire dans {jours} jour(s)"
+        };
+
+        // On envoie l'objet à ResultatPage (pas de texte dans l'URL)
+        await Shell.Current.GoToAsync(nameof(ResultatPage),
+            new Dictionary<string, object> { { "Info", info } });
+    }
+
+    private int JoursAvantAnniversaire()
+    {
+        DateTime aujourdhui = DateTime.Today;
+        DateTime prochain = AnniversaireEnAnnee(aujourdhui.Year);
+
+        if (prochain < aujourdhui)
+            prochain = AnniversaireEnAnnee(aujourdhui.Year + 1);
+
+        return (prochain - aujourdhui).Days;
+    }
+
+    private DateTime AnniversaireEnAnnee(int annee)
+    {
+        int mois = DateNaissance.Month;
+        int jour = DateNaissance.Day;
+
+        if (mois == 2 && jour == 29 && !DateTime.IsLeapYear(annee))
+            jour = 28;
+
+        return new DateTime(annee, mois, jour);
     }
 
     private void Effacer()
     {
         Nom = "";
         DateNaissance = DateTime.Today.AddYears(-20);
-        Resultat = "";
-        Message = "";
-        ResultatVisible = false;
     }
 }

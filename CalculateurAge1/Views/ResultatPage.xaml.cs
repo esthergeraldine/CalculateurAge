@@ -1,21 +1,18 @@
+using CalculateurAge1.ViewModels;
+
 namespace CalculateurAge1.Views;
 
-
-[QueryProperty(nameof(Nom), "nom")]
-[QueryProperty(nameof(Age), "age")]
+[QueryProperty(nameof(Info), "Info")]
 public partial class ResultatPage : ContentPage
 {
-    public string Nom { get; set; } = string.Empty;
-    public string Age { get; set; } = string.Empty;
+    // Reçoit l'objet envoyé par le ViewModel et le donne aux bindings
+    public ResultatInfo Info
+    {
+        set => BindingContext = value;
+    }
 
     public ResultatPage() => InitializeComponent();
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        lblMessage.Text = $"{Nom}, vous avez {Age} ans";
-    }
-
-    private async void OnRetourClicked(object? sender, EventArgs e)
+    private async void OnRetourClicked(object sender, EventArgs e)
         => await Shell.Current.GoToAsync("..");
 }
