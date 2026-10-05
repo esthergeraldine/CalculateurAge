@@ -7,11 +7,19 @@
         <VerticalStackLayout Padding="20" Spacing="12">
             <Label Text="Nom" FontSize="16"/>
             <Entry Text="{Binding Nom, Mode=TwoWay}" Placeholder="Votre nom"/>
+
             <Label Text="Date de naissance" FontSize="16"/>
             <DatePicker Date="{Binding DateNaissance}"/>
+            <Label Text="{Binding ErreurDate}" TextColor="Red"
+           IsVisible="{Binding ErreurVisible}"/>
+
             <Button Text="Calculer" Command="{Binding CalculerCommand}"/>
+            <Button Text="Effacer" Command="{Binding EffacerCommand}"/>
+
             <Label Text="{Binding Resultat}" FontSize="20"
-                   IsVisible="{Binding ResultatVisible}"/>
+           IsVisible="{Binding ResultatVisible}"/>
+            <Label Text="{Binding Message}" FontSize="18" TextColor="Green"
+           IsVisible="{Binding ResultatVisible}"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
