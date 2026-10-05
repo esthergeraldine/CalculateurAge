@@ -1,5 +1,3 @@
-using static Android.Media.MediaDrm;
-
 namespace CalculateurAge1.Views;
 
 
