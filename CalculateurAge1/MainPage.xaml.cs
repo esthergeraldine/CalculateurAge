@@ -1,38 +1,27 @@
 ﻿using CalculateurAge1.views;
 
-namespace CalculateurAge1
+namespace CalculateurAge1;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    public MainPage()
     {
-        int count = 0;
+        InitializeComponent();
+    }
 
-        public MainPage()
+    private async void OnCalculerClicked(object sender, EventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(entryNom.Text))
         {
-            InitializeComponent();
+            await DisplayAlert("Erreur", "Entrez un nom", "OK");
+            return;
         }
 
+        DateTime d = (DateTime)pickerDate.Date;
+        int age = DateTime.Today.Year - d.Year;
+        if (d.Date > DateTime.Today.AddYears(-age)) age--;
 
-        private async void OnCalculerClicked(object sender, EventArgs e)
-        {
-            // Validation : on refuse un nom vide.
-            if (string.IsNullOrWhiteSpace(entryNom.Text))
-            {
-                await DisplayAlert("Erreur", "Entrez un nom", "OK");
-                return;
-            }
-
-            // DatePicker.Date n'est pas nullable en .NET MAUI : on récupère directement la date.
-            DateTime d = pickerDate.Date;
-            int age = DateTime.Today.Year - d.Year;
-            // Si 1 anniversaire n est pas encore passe cette annee,
-            // on retire une annee.
-            if (d.Date > DateTime.Today.AddYears(-age)) age--;
-
-            // On escrit DIRECTEMENT dans les controles : c est
-            // precisement ce que le MVVM va supprimer.
-            await Shell.Current.GoToAsync(
-                $"{nameof(ResultatPage)}?nom={entryNom.Text}&age={age}");
-        }
-
+        lblResultat.Text = $"{entryNom.Text}, vous avez {age} ans";
+        lblResultat.IsVisible = true;
     }
 }
